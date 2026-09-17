@@ -1,0 +1,25 @@
+name: Build APK and EXE
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find ZIP
+        run: |
+          ZIP=$(find . -type f -name "*.zip" | head -1)
+          echo "ZIP=$ZIP" >> $GITHUB_ENV
+
+      - name: Extract
+        run: |
+          mkdir project
+          unzip -o "$ZIP" -d project
+
+      - name: Show project
+        run: |
+          find project -maxdepth 3 -type f | head -100
