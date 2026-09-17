@@ -1,0 +1,48 @@
+name: Build Protocol Police Duty
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Find ZIP
+        run: |
+          ZIP=$(find . -maxdepth 2 -type f -iname "*.zip" | head -1)
+          if [ -z "$ZIP" ]; then
+            echo "ZIP file not found"
+            exit 1
+          fi
+          echo "Found: $ZIP"
+
+      - name: Extract ZIP
+        run: |
+          ZIP=$(find . -maxdepth 2 -type f -iname "*.zip" | head -1)
+          mkdir extracted
+          unzip -o "$ZIP" -d extracted
+
+      - name: Find web app
+        run: |
+          HTML=$(find extracted -type f -name "index.html" | head -1)
+          if [ -z "$HTML" ]; then
+            echo "index.html not found"
+            exit 1
+          fi
+          APP=$(dirname "$HTML")
+          echo "APP=$APP" >> "$GITHUB_ENV"
+
+      - name: Show project files
+        run: |
+          echo "Web app folder: $APP"
+          find "$APP" -maxdepth 2 -type f | head -100
+
+      - name: Upload extracted project
+        uses: actions/upload-artifact@v4
+        with:
+          name: Protocol-Police-Duty-Extracted
+          path: extracted
