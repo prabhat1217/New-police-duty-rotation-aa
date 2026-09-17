@@ -1,0 +1,20 @@
+name: Build Police Duty
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find project
+        run: |
+          ZIP=$(find . -type f -name "*.zip" | head -1)
+          if [ -z "$ZIP" ]; then
+            echo "ZIP not found"
+            exit 1
+          fi
+          echo "Found project ZIP:"
+          echo "$ZIP"
